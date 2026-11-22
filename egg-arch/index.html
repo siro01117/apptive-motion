@@ -294,7 +294,7 @@ html, body { margin:0; height:100%; background:#000; overflow:hidden; -webkit-te
     { who: K, say: '비밀은 모양이에요.\n둥근 달걀 끝은 누른 힘을 곡선 따라 껍데기 전체로 퍼뜨려요.', on: ['gEgg', 'gPress', 'gFlow'], dy: 23 },
     { who: K, say: '이번엔 직접 눌러 볼게요.\n누르는 방법을 골라 보세요.', on: ['gEgg', 'gTouch'], dy: 50, ctl: true, run: () => press(null) },
     { who: K, say: '어미 닭이 올라앉아도 멀쩡한 알을 병아리는 깨요.\n부리로 한 곳만 쪼거든요.', on: ['gEgg', 'gPeck'], dy: 23 },
-    { who: C, say: '둥글어서 버틴다냥?\n숭례문 아래 둥근 문이랑 닮았다냥!', on: ['gGate', 'gArc'], dy: -44, arc: 'door' },
+    { who: C, say: '둥글어서 버티는 거야?\n숭례문 아래 둥근 문이랑 닮았어!', on: ['gGate', 'gArc'], dy: -44, arc: 'door' },
     { who: K, say: '이렇게 둥글게 휜 모양을 아치라고 해요.', on: ['gArc', 'gPiers'], dy: -13, arc: 'arch' },
     { who: K, say: '꼭대기를 누르면 힘이 곡선을 타고 내려가 받침을 아래로, 또 바깥으로 밀어요.', on: ['gArc', 'gPiers', 'gArchF', 'gArchTop', 'gArchLbl'], dy: -6, arc: 'arch' },
     { who: K, say: '달걀 끝도 이 꼭대기처럼\n누른 힘을 곡선으로 흘려보내요.', on: ['gArc', 'gPiers', 'gArchF', 'gArchLbl', 'gEgg'], dy: -6, arc: 'arch', egg: 'crown' },
@@ -385,7 +385,7 @@ html, body { margin:0; height:100%; background:#000; overflow:hidden; -webkit-te
       const s = STEPS[f.i]; show(s.on); viz.dataset.egg = s.egg || ''; viz.dataset.arc = s.arc || ''; arcTo(s.arc || '', !G('gArc').classList.contains('on')); crack(s.crack || 0);
       say(s.who, s.say); $('#ctl').classList.toggle('on', !!s.ctl); if (s.ctl) btn('계속', !touched); if (s.run) s.run();
     }
-    if (f.t == 'end') { show(['gStar']); viz.dataset.egg = ''; viz.dataset.arc = ''; say(C, '별에 불 들어왔다냥!'); btn('계속'); }
+    if (f.t == 'end') { show(['gStar']); viz.dataset.egg = ''; viz.dataset.arc = ''; say(C, '별에 불이 들어왔어!'); btn('계속'); }
     if (f.t == 'end2') { show(['gHole']); say(C, '이제 길 가다 발밑을 봐라냥.\n맨홀 뚜껑이 죄다 동그랗다냥.'); btn('계속'); }
     if (f.t == 'result') { show(['gStar']); $('#end').classList.add('on'); btn('완료'); }   // 피그마 L06_2 일반 학습 완료
   }
