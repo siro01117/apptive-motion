@@ -98,12 +98,12 @@ html, body { margin:0; height:100%; background:#000; overflow:hidden; -webkit-te
 .btn.hide { opacity:0; pointer-events:none; }
 
 /* 조작: 와프 슬라이더(트랙 2px, 손잡이 막대 4x24) */
-#ctl { position:absolute; left:0; top:668px; width:402px; height:70px; opacity:0; pointer-events:none; transition:opacity .25s; }
+#ctl { position:absolute; left:0; top:676px; width:402px; height:48px; opacity:0; pointer-events:none; transition:opacity .25s; }
 #ctl.on { opacity:1; pointer-events:auto; }
-#ctl .track { position:absolute; left:40px; top:22px; width:322px; height:2px; border-radius:1px; background:var(--line); }
-#ctl .knob { position:absolute; left:38px; top:15px; width:16px; height:16px; margin-left:-6px; border-radius:50%; background:var(--ink); box-shadow:var(--glow); pointer-events:none; }
-#ctl input { position:absolute; left:18px; top:0; width:366px; height:44px; margin:0; opacity:0; cursor:pointer; }
-#ctl .ends { position:absolute; left:24px; width:354px; top:45px; display:flex; justify-content:space-between; font-size:12px; line-height:18px; font-weight:500; color:var(--sub); }
+#ctl { display:flex; gap:12px; padding:0 40px; }
+#ctl button { flex:1; height:48px; border-radius:24px; border:1px solid var(--border); background:transparent; color:var(--sub); font-size:15px; font-weight:500; transition:background .15s, color .15s, border-color .15s; }
+#ctl button.sel { background:var(--ink); border-color:var(--ink); color:var(--bg); font-weight:700; }
+#ctl button:active { scale:.97; }
 
 /* 퀴즈 */
 #quiz { position:absolute; inset:100px 0 0 0; background:var(--bg); opacity:0; pointer-events:none; transition:opacity .25s; }
@@ -255,7 +255,7 @@ html, body { margin:0; height:100%; background:#000; overflow:hidden; -webkit-te
   </div>
   <div id="talk"><div id="who"></div><div id="say"></div></div>
   <div id="end"><b>별을 밝혔어요 !</b><span>달걀은 왜 양 끝을 쥐면 안 깨질까</span><em><svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 0L9.98 6.02L16 8L9.98 9.98L8 16L6.02 9.98L0 8L6.02 6.02L8 0Z" fill="#FFDE23"/></svg>별가루 +10</em><i>에너지 -1</i></div>
-  <div id="ctl"><div class="track"></div><div class="knob" id="knob"></div><input type="range" min="0" max="100" value="0" id="rng"><div class="ends"><span>손바닥으로 넓게</span><span>한 점</span></div></div>
+  <div id="ctl"><button data-m="0">손바닥으로 고르게</button><button data-m="1">한 점에만</button></div>
   <button class="btn hide" id="main">계속</button>
   <div id="hint">화면을 누르면 넘어가요</div>
 
@@ -275,7 +275,7 @@ html, body { margin:0; height:100%; background:#000; overflow:hidden; -webkit-te
     { who: K, say: '정말 잘 안 깨져요.', on: ['gEgg', 'gPress'], dy: 23 },
     { who: K, say: '껍데기 두께는 0.3~0.4mm,\n신분증 카드 두께의 절반쯤인데요.', on: ['gEgg', 'gThick'], egg: 'cmp', dy: 1, run: count },
     { who: K, say: '비밀은 모양이에요.\n둥근 달걀 끝은 누른 힘을 곡선 따라 껍데기 전체로 퍼뜨려요.', on: ['gEgg', 'gPress', 'gFlow'], dy: 23 },
-    { who: K, say: '이번엔 직접 눌러 볼게요.\n닿는 곳을 점점 좁혀 보세요.', on: ['gEgg', 'gTouch'], dy: 50, ctl: true, run: () => touch(+$('#rng').value) },
+    { who: K, say: '이번엔 직접 눌러 볼게요.\n누르는 방법을 골라 보세요.', on: ['gEgg', 'gTouch'], dy: 50, ctl: true, run: () => press(null) },
     { who: K, say: '어미 닭이 올라앉아도 멀쩡한 알을 병아리는 깨요.\n부리로 한 곳만 쪼거든요.', on: ['gEgg', 'gPeck'], dy: 26, crack: 2 },
     { who: C, say: '둥글어서 버틴다냥?\n숭례문 아래 둥근 문이랑 닮았다냥!', on: ['gGate', 'gArc'], dy: -44, arc: 'door' },
     { who: K, say: '이렇게 둥글게 휜 모양을 아치라고 해요.', on: ['gArc', 'gPiers'], dy: -38, arc: 'arch' },
@@ -326,13 +326,20 @@ html, body { margin:0; height:100%; background:#000; overflow:hidden; -webkit-te
       const x = P.x + dx * 4, y = P.y + dy * 4, x2 = x + dx * (L + 12), y2 = y + dy * (L + 12), px = -dy, py = dx, hd = 8 + 3 * t;
       h += `<path class="arw" style="stroke-width:${2.5 + 1.5 * t};opacity:${t > .97 && i != mid ? 0 : 1}" d="M ${x2} ${y2} L ${x} ${y} M ${x + dx * hd + px * hd * .7} ${y + dy * hd + py * hd * .7} L ${x} ${y} L ${x + dx * hd - px * hd * .7} ${y + dy * hd - py * hd * .7}"/>`;
     }
-    G('touchArrows').innerHTML = h; $('#knob').style.left = 38 + 322 * t + 'px';
+    G('touchArrows').innerHTML = h;
     const was = G('crackA').classList.contains('on');
     crack(t > .85 ? (t > .97 ? 2 : 1) : 0);
     if (t > .85 && !was) { viz.dataset.egg = 'shake'; setTimeout(() => { if (viz.dataset.egg == 'shake') viz.dataset.egg = ''; }, 300); }
-    const f = FLOW[at]; if (f.t != 'step' || !STEPS[f.i].ctl) return;
-    say(K, t > .85 ? '금이 가요.\n같은 힘인데 한 점에 몰렸거든요.' : t > .4 ? '닿는 곳이 좁아질수록\n힘이 모여요.' : touched ? '손바닥으로 감싸 쥐면\n힘이 껍데기 전체에 고루 실려요.' : STEPS[f.i].say, true);
-    if (t > .85) { touched = true; main.classList.remove('off'); }
+  }
+  // 상황 버튼: 0 = 손바닥으로 고르게, 1 = 한 점에만. 지금 모양에서 고른 모양으로 0.5초 동안 옮긴다
+  let tNow = 0, tRaf = 0, mode = null;
+  function press(m) {
+    cancelAnimationFrame(tRaf); mode = m; document.querySelectorAll('#ctl button').forEach(b => b.classList.toggle('sel', +b.dataset.m === m));
+    if (m == null) { tNow = 0; G('touchArrows').innerHTML = ''; crack(0); return; }
+    const from = G('touchArrows').innerHTML ? tNow : m, t0 = performance.now();
+    say(K, m ? '금이 가요.\n같은 힘인데 한 점에 몰렸거든요.' : '손바닥으로 감싸 쥐면\n힘이 껍데기 전체에 고루 실려요.');
+    (function f(t) { const k = from == m ? 1 : Math.min((t - t0) / 500, 1), e = 1 - Math.pow(1 - k, 3); tNow = from + (m - from) * e; touch(tNow * 100); if (k < 1) tRaf = requestAnimationFrame(f); })(t0);
+    if (m) { touched = true; main.classList.remove('off'); }
   }
   function crack(n) { G('crackA').classList.toggle('on', n >= 1); G('crackB').classList.toggle('on', n >= 2); }
   function say(who, text, quick) {
@@ -366,7 +373,7 @@ html, body { margin:0; height:100%; background:#000; overflow:hidden; -webkit-te
     if (f.t == 'end2') { show(['gHole']); say(C, '이제 길 가다 발밑을 봐라냥.\n맨홀 뚜껑이 죄다 동그랗다냥.'); btn('계속'); }
     if (f.t == 'result') { show(['gStar']); $('#end').classList.add('on'); btn('완료'); }   // 피그마 L06_2 일반 학습 완료
   }
-  function go(d) { const n = at + d; if (n < 0) return; if (n >= FLOW.length) { at = 0; score = 0; touched = false; $('#rng').value = 0; return render(); } at = n; render(); }
+  function go(d) { const n = at + d; if (n < 0) return; if (n >= FLOW.length) { at = 0; score = 0; touched = false; return render(); } at = n; render(); }
 
   // 퀴즈: O/X 는 가운데 질문 + 큰 O X, 초성은 글자 입력, 나머지는 줄 목록(고르면 굵게). 해설이 있으면 결과 시트
   function ask(q) {
@@ -396,7 +403,7 @@ html, body { margin:0; height:100%; background:#000; overflow:hidden; -webkit-te
     qc.onclick = e => { e.stopPropagation(); if (pick.size) done(); };
   }
   $('#sn').onclick = e => { e.stopPropagation(); go(1); };
-  $('#rng').oninput = e => touch(+e.target.value);
+  document.querySelectorAll('#ctl button').forEach(b => b.onclick = e => { e.stopPropagation(); press(+b.dataset.m); });
   $('#ctl').onclick = e => e.stopPropagation();
   main.onclick = e => { e.stopPropagation(); if (!main.classList.contains('off')) go(1); };
   $('#back').onclick = e => { e.stopPropagation(); go(-1); };
