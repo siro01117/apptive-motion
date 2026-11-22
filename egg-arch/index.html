@@ -309,7 +309,7 @@ html, body { margin:0; height:100%; background:#000; overflow:hidden; -webkit-te
   ];
 
   // 흐름: 후킹 퀴즈 → 설명 → 확인 퀴즈 → 끝
-  const FLOW = [{ t: 'hook' }, ...STEPS.map((s, i) => ({ t: 'step', i })), ...QUIZ.map((q, i) => ({ t: 'quiz', i })), { t: 'end' }, { t: 'end2' }, { t: 'result' }];
+  const FLOW = [{ t: 'hook' }, ...STEPS.map((s, i) => ({ t: 'step', i })), ...QUIZ.map((q, i) => ({ t: 'quiz', i })), { t: 'end' }, { t: 'result' }];   // 다음 학습 예고(맨홀)는 뺌
   const SPARK = '<svg width="12" height="12" viewBox="0 0 16 16"><path d="M8 0L9.98 6.02L16 8L9.98 9.98L8 16L6.02 9.98L0 8L6.02 6.02L8 0Z" fill="currentColor"/></svg>';
   const STAR = c => `<svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 0L9.98 6.02L16 8L9.98 9.98L8 16L6.02 9.98L0 8L6.02 6.02L8 0Z" fill="none" stroke="${c}" stroke-width="1.37"/></svg>`;
   const CHECK = '<svg width="16" height="12" viewBox="0 0 16 12"><path d="M1 6L6 11L15 1" fill="none" stroke="currentColor" stroke-width="2.4"/></svg>';
