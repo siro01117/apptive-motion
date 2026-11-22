@@ -10,7 +10,7 @@
 <style>
 /* 디자인은 팀 피그마 '01-시작-학습-별자리' 값: 바탕 #161616, 글 #F1F1F1 · #AAAAAA · #747474, 강조 노랑 #FFDE23, 가는 흰 선 · 빛나는 점, 알약 버튼(322x48) */
 :root { --ease:cubic-bezier(.2,.7,.2,1); }
-#stage { --bg:#FFFFFF; --ink:#161616; --sub:#747474; --mute:#AAAAAA; --line:#E4E4E4; --border:#D9D9D9; --pick:#F5B400; --ok:#F5B400; --ng:#161616; --key:#161616; --fill:#F1F1F1; --shade:#E4E4E4; --glow:none; transition:background .35s ease, color .35s ease; }
+#stage { --bg:#FFFFFF; --ink:#161616; --sub:#747474; --mute:#AAAAAA; --line:#E4E4E4; --border:#D9D9D9; --pick:#12915A; --ok:#12915A; --ng:#E5484D; --key:#161616; --fill:#F1F1F1; --shade:#E4E4E4; --glow:none; transition:background .35s ease, color .35s ease; }
 #stage.dark { --bg:#161616; --ink:#F1F1F1; --sub:#AAAAAA; --mute:#747474; --line:rgba(241,241,241,.16); --border:rgba(241,241,241,.3); --pick:#FFDE23; --ok:#FFDE23; --ng:#F1F1F1; --key:#F1F1F1; --fill:#1F1F1F; --shade:#292929; --glow:0 0 14px rgba(255,255,255,.45); }
 html, body { margin:0; height:100%; background:#fff; transition:background .35s ease; overflow:hidden; -webkit-text-size-adjust:100%; }
 #stage { position:absolute; left:50%; top:50%; width:402px; height:874px; transform-origin:0 0; background:var(--bg); overflow:hidden;
@@ -26,10 +26,10 @@ html, body { margin:0; height:100%; background:#fff; transition:background .35s 
 #sec { position:absolute; left:64px; top:74px; font-size:13px; line-height:20px; font-weight:500; color:var(--sub); }
 
 /* 시각 자료 판: 와프는 y302 h267, 모션 그림이 들어가도록 위로 넓힘(아래 끝 569 는 그대로) */
-/* 그림 판은 앱 화면과 따로: 흰 판 위에 검정 선 · 노랑 포인트 · 빨강 금. 파랑은 쓰지 않는다. 흰 바탕이라 노랑은 앱의 #FFDE23 보다 진한 #F5B400. 별 점등만 판 없이 앱 색 */
+/* 그림 판은 앱 화면과 따로: 흰 판 위에 검정 선 · 초록 포인트(#12915A) · 빨강 금과 틀림(#E5484D). 파랑은 쓰지 않는다. 노랑은 검정 화면의 별가루 보상에만. 별 점등만 판 없이 앱 색 */
 #panel { position:absolute; left:24px; top:196px; width:354px; height:373px; border-radius:16px; overflow:hidden; background:#fff; border:1px solid #E4E4E4; transition:background .25s, border-color .25s; }
 #panel, #qpic {
-  --bg:#fff; --ink:#161616; --sub:#8A8A8A; --mute:#D9D9D9; --key:#161616; --pick:#F5B400; --fill:#F1F1F1; --shade:#E9D6BF; --border:#D9D9D9; --crack:#E5484D; }
+  --bg:#fff; --ink:#161616; --sub:#8A8A8A; --mute:#D9D9D9; --key:#161616; --pick:#12915A; --fill:#F1F1F1; --shade:#E9D6BF; --border:#D9D9D9; --crack:#E5484D; }
 #panel.plain { background:transparent; border-color:transparent; --bg:#161616; --ink:#F1F1F1; }
 #panel:not(.plain) .ol, #qpic .ol { stroke-width:2; }
 #qpic { display:none; margin:0 24px 28px; height:190px; border-radius:16px; background:#fff; border:1px solid #E4E4E4; overflow:hidden; }
@@ -115,7 +115,7 @@ html, body { margin:0; height:100%; background:#fff; transition:background .35s 
 #qo { margin:32px 24px 0; border-top:1px solid var(--line); }
 #qo button { display:flex; align-items:center; justify-content:space-between; width:100%; height:64px; padding:0 8px 0 20px; border:0; border-bottom:1px solid var(--line); background:transparent; font-size:17px; font-weight:500; color:var(--mute); text-align:left; transition:color .15s; }
 #qo button.sel, #qo button.ok { color:var(--ink); font-weight:700; }
-#qo button.ng { color:var(--sub); font-weight:500; text-decoration:line-through; }
+#qo button.ng { color:var(--ng); font-weight:500; text-decoration:line-through; }
 #qo button:active { scale:.98; }
 #qo button svg { opacity:0; color:var(--pick); } #qo button.ok svg { opacity:1; }
 #qo.ox { display:flex; gap:18px; margin:32px 27px 0; border:0; }
@@ -123,6 +123,7 @@ html, body { margin:0; height:100%; background:#fff; transition:background .35s 
 #qo.ox button svg { opacity:1; width:86px; height:86px; fill:none; stroke:var(--mute); stroke-width:9; transition:stroke .15s; }
 #qo.ox button.sel svg { stroke:var(--ink); }
 #qo.ox button.ok svg { stroke:var(--pick); filter:none; }
+#qo.ox button.ng svg { stroke:var(--ng); }
 #qo.ox button.dim svg { opacity:.35; filter:none; }
 #qo.ox button:active svg { scale:.94; }
 #qo.cho { border:0; }
@@ -132,13 +133,14 @@ html, body { margin:0; height:100%; background:#fff; transition:background .35s 
 #qo.cho .box span { width:40px; font-size:30px; line-height:44px; font-weight:700; text-align:center; color:var(--mute); border-bottom:2px solid transparent; transition:color .15s; }
 #qo.cho .box span.in { color:var(--ink); }
 #qo.cho .box.focus span.cur { border-bottom-color:var(--pick); }
-#qo.cho .box.ng span { color:var(--sub); text-decoration:line-through; }
+#qo.cho .box.ng { border-color:var(--ng); }
+#qo.cho .box.ng span { color:var(--ng); text-decoration:line-through; }
 #qo.cho input { position:absolute; inset:0; width:100%; height:100%; border:0; outline:0; background:transparent; color:transparent; caret-color:transparent; font-size:16px; text-align:center; opacity:.01; }
 #sheet { position:absolute; left:0; right:0; bottom:0; min-height:234px; padding:28px 24px 34px; background:#F1F1F1; color:#161616; border-radius:24px 24px 0 0; translate:0 110%; transition:translate .3s var(--ease); }
 #sheet.on { translate:0 0; }
 #sheet::before { content:""; position:absolute; left:181px; top:10px; width:40px; height:4px; border-radius:2px; background:#AAAAAA; }
-#sr { display:flex; align-items:center; gap:6px; font-size:15px; line-height:22px; font-weight:700; color:#161616; }
-#sr.ng { color:#161616; }
+#sr { display:flex; align-items:center; gap:6px; font-size:15px; line-height:22px; font-weight:700; color:#12915A; }
+#sr.ng { color:#E5484D; }
 #se { margin:12px 0 24px; font-size:17px; line-height:26px; font-weight:500; word-break:keep-all; }
 #sheet .btn { position:static; display:block; margin:0 auto; background:#161616; border-color:#161616; color:#F1F1F1; box-shadow:none; }
 #quiz > .btn { top:646px; }
@@ -358,7 +360,7 @@ html, body { margin:0; height:100%; background:#fff; transition:background .35s 
   function ask(q) {
     const qo = $('#qo'), qc = $('#qc'), ox = q.kind == 'ox', cho = q.kind == 'chosung'; $('#qpic').classList.toggle('on', !!q.pic); $('#qq').textContent = q.q; $('#qq').className = ox || cho ? 'c' : ''; qo.innerHTML = ''; qo.className = ox ? 'ox' : cho ? 'cho' : '';
     qc.classList.toggle('hide', !(q.kind == 'multi' || cho)); qc.classList.add('off');
-    const result = ok => { qc.classList.add('hide'); if (ok) score++; const sr = $('#sr'); sr.className = ok ? '' : 'ng'; sr.innerHTML = (ok ? STAR('#161616') : '') + (ok ? '정답' : '아쉬워요'); $('#se').textContent = q.e; $('#quiz').classList.add('res'); $('#sheet').classList.add('on'); };
+    const result = ok => { qc.classList.add('hide'); if (ok) score++; const sr = $('#sr'); sr.className = ok ? '' : 'ng'; sr.innerHTML = (ok ? STAR('#12915A') : '') + (ok ? '정답' : '아쉬워요'); $('#se').textContent = q.e; $('#quiz').classList.add('res'); $('#sheet').classList.add('on'); };
     if (cho) {
       const N = q.a[0].length, H = [...q.hint];
       qo.innerHTML = `<div class="box">${H.map(() => '<span></span>').join('')}<input type="text" maxlength="${N}" autocomplete="off" autocapitalize="off" spellcheck="false"></div>`;
@@ -374,7 +376,7 @@ html, body { margin:0; height:100%; background:#fff; transition:background .35s 
     const done = () => {
       const ok = pick.size == right.length && right.every(i => pick.has(i));
       if (!q.e) { [...qo.children].forEach(b => b.disabled = true); return setTimeout(() => go(1), 650); }   // 후킹: 채점 없이 바로 설명으로
-      [...qo.children].forEach((b, i) => { b.disabled = true; b.classList.remove('sel'); if (right.includes(i)) b.classList.add('ok'); else if (pick.has(i)) b.classList.add(ox ? 'dim' : 'ng'); else if (ox) b.classList.add('dim'); });
+      [...qo.children].forEach((b, i) => { b.disabled = true; b.classList.remove('sel'); if (right.includes(i)) b.classList.add('ok'); else if (pick.has(i)) b.classList.add('ng'); else if (ox) b.classList.add('dim'); });
       result(ok);
     };
     opts.forEach((o, i) => { const b = document.createElement('button'); b.innerHTML = ox ? o : `<span></span>${CHECK}`; if (!ox) b.firstChild.textContent = o;
