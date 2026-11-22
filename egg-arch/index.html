@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<title>달걀은 왜 양 끝을 쥐면 안 깨질까</title>
+<title>달걀은 왜 양 끝을 쥐면 안 깨질까 · 모션 견본</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
@@ -27,7 +27,7 @@ html, body { margin:0; height:100%; background:#fff; transition:background .35s 
 
 /* 시각 자료 판: 와프는 y302 h267, 모션 그림이 들어가도록 위로 넓힘(아래 끝 569 는 그대로) */
 /* 그림 판은 앱 화면과 따로: 흰 판 위에 검정 선 · 초록 포인트(#12915A) · 빨강 금과 틀림(#E5484D). 파랑은 쓰지 않는다. 노랑은 검정 화면의 별가루 보상에만. 별 점등만 판 없이 앱 색 */
-#panel { position:absolute; left:24px; top:196px; width:354px; height:373px; border-radius:16px; overflow:hidden; background:#fff; border:1px solid #E4E4E4; transition:background .25s, border-color .25s; }
+#panel { position:absolute; left:24px; top:120px; width:354px; height:373px; border-radius:16px; overflow:hidden; background:#fff; border:1px solid #E4E4E4; transition:background .25s, border-color .25s; }
 #panel, #qpic {
   --bg:#fff; --ink:#161616; --sub:#8A8A8A; --mute:#D9D9D9; --key:#161616; --pick:#12915A; --fill:#F1F1F1; --shade:#E9D6BF; --border:#D9D9D9; --crack:#E5484D; }
 #panel.plain { background:transparent; border-color:transparent; --bg:#161616; --ink:#F1F1F1; }
@@ -43,7 +43,7 @@ html, body { margin:0; height:100%; background:#fff; transition:background .35s 
 #viz .g { opacity:0; transition:opacity .3s ease, transform .45s var(--ease); pointer-events:none; }
 #viz .g.on { opacity:1; }
 .ol { fill:none; stroke:var(--ink); stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; }
-.lbl { font-size:13px; font-weight:500; fill:var(--mute); }
+.lbl { font-size:15px; font-weight:500; fill:var(--mute); }
 .lbl.b { fill:var(--key); font-weight:700; }
 .num { font-size:20px; font-weight:700; fill:var(--ink); font-variant-numeric:tabular-nums; }
 .draw { fill:none; stroke:var(--pick); stroke-width:3; stroke-linecap:round; stroke-dasharray:1; stroke-dashoffset:1; transition:stroke-dashoffset .45s var(--ease); }
@@ -80,12 +80,12 @@ html, body { margin:0; height:100%; background:#fff; transition:background .35s 
 #gStar.on .dot { transform:scale(1); }
 
 /* 대사: 화자 이름 13 Bold + 대사 17 Medium (와프 y585) */
-#talk { position:absolute; left:24px; width:354px; top:585px; transition:opacity .25s; }
-#who { display:flex; align-items:center; gap:8px; font-size:13px; line-height:20px; font-weight:700; margin-bottom:4px; color:var(--sub); }
+#talk { position:absolute; left:24px; width:354px; top:513px; transition:opacity .25s; }
+#who { display:flex; align-items:center; gap:8px; font-size:15px; line-height:22px; font-weight:700; margin-bottom:6px; color:var(--sub); }
 #who svg { display:block; }
-#say { font-size:17px; line-height:26px; font-weight:500; word-break:keep-all; white-space:pre-line; transition:opacity .2s ease, translate .25s var(--ease); }
+#say { font-size:21px; line-height:32px; font-weight:500; word-break:keep-all; white-space:pre-line; transition:opacity .2s ease, translate .25s var(--ease); }
 #say.out { opacity:0; translate:0 6px; transition:none; }
-#end { position:absolute; left:24px; width:354px; top:500px; text-align:center; opacity:0; transition:opacity .3s ease .2s; pointer-events:none; }
+#end { position:absolute; left:24px; width:354px; top:452px; text-align:center; opacity:0; transition:opacity .3s ease .2s; pointer-events:none; }
 #end.on { opacity:1; }
 #end b { display:block; font-size:24px; line-height:29px; } #end span { display:inline-block; margin-top:20px; padding-bottom:4px; border-bottom:1px solid var(--sub); font-size:14px; line-height:16px; font-weight:500; color:var(--sub); }
 #end em { display:flex; justify-content:center; align-items:center; gap:8px; margin-top:36px; font-style:normal; font-size:16px; line-height:19px; font-weight:700; color:var(--pick); }
@@ -98,7 +98,7 @@ html, body { margin:0; height:100%; background:#fff; transition:background .35s 
 .btn.hide { opacity:0; pointer-events:none; }
 
 /* 조작: 와프 슬라이더(트랙 2px, 손잡이 막대 4x24) */
-#ctl { position:absolute; left:0; top:662px; width:402px; height:70px; opacity:0; pointer-events:none; transition:opacity .25s; }
+#ctl { position:absolute; left:0; top:668px; width:402px; height:70px; opacity:0; pointer-events:none; transition:opacity .25s; }
 #ctl.on { opacity:1; pointer-events:auto; }
 #ctl .track { position:absolute; left:40px; top:22px; width:322px; height:2px; border-radius:1px; background:var(--line); }
 #ctl .knob { position:absolute; left:38px; top:15px; width:16px; height:16px; margin-left:-6px; border-radius:50%; background:var(--ink); box-shadow:var(--glow); pointer-events:none; }
@@ -140,9 +140,9 @@ html, body { margin:0; height:100%; background:#fff; transition:background .35s 
 #sheet { position:absolute; left:0; right:0; bottom:0; min-height:234px; padding:28px 24px 34px; background:#F1F1F1; color:#161616; border-radius:24px 24px 0 0; translate:0 110%; transition:translate .3s var(--ease); }
 #sheet.on { translate:0 0; }
 #sheet::before { content:""; position:absolute; left:181px; top:10px; width:40px; height:4px; border-radius:2px; background:#AAAAAA; }
-#sr { display:flex; align-items:center; gap:6px; font-size:15px; line-height:22px; font-weight:700; color:#2450F0; }
+#sr { display:flex; align-items:center; gap:6px; font-size:16px; line-height:24px; font-weight:700; color:#2450F0; }
 #sr.ng { color:#E5484D; }
-#se { margin:12px 0 24px; font-size:17px; line-height:26px; font-weight:500; word-break:keep-all; }
+#se { margin:12px 0 24px; font-size:19px; line-height:29px; font-weight:500; word-break:keep-all; }
 #sheet .btn { position:static; display:block; margin:0 auto; background:#161616; border-color:#161616; color:#F1F1F1; box-shadow:none; }
 #quiz > .btn { top:646px; }
 </style>
