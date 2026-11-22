@@ -49,7 +49,7 @@ html, body { margin:0; height:100%; background:#050505; overflow:hidden; -webkit
 .flow { fill:none; stroke:var(--bg); stroke-width:3; stroke-linecap:butt; stroke-dasharray:3 9; animation:flow 1s linear infinite; opacity:0; transition:opacity .2s ease .45s; }
 .g.on .flow { opacity:.9; }
 @keyframes flow { to { stroke-dashoffset:-12; } }
-.arw { fill:none; stroke:var(--pick); stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
+.arw { fill:none; stroke:var(--pick); stroke-width:3; stroke-linecap:butt; stroke-linejoin:miter; stroke-miterlimit:8; }
 .bar { transform-box:fill-box; transform-origin:center bottom; transform:scaleY(0); transition:transform .45s var(--ease) .2s; }
 .g.on .bar { transform:scaleY(1); } .g.on .bar.d2 { transition-delay:.35s; }
 .guide { fill:none; stroke:var(--sub); stroke-width:1; stroke-dasharray:3 4; }
