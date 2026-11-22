@@ -348,14 +348,14 @@ html, body { margin:0; height:100%; background:#000; overflow:hidden; -webkit-te
     if (t > .85 && !was) { viz.dataset.egg = 'shake'; setTimeout(() => { if (viz.dataset.egg == 'shake') viz.dataset.egg = ''; }, 300); }
   }
   // 상황 버튼: 0 = 손바닥으로 고르게, 1 = 한 점에만. 지금 모양에서 고른 모양으로 0.5초 동안 옮긴다
-  let tNow = 0, tRaf = 0, mode = null;
+  let tNow = 0, tRaf = 0, mode = null; const seen = new Set();   // 두 상황을 한 번씩 눌러 봐야 '계속'이 켜진다
   function press(m) {
     cancelAnimationFrame(tRaf); mode = m; document.querySelectorAll('#ctl button').forEach(b => b.classList.toggle('sel', +b.dataset.m === m));
     if (m == null) { tNow = 0; G('touchArrows').innerHTML = ''; crack(0); return; }
     const from = G('touchArrows').innerHTML ? tNow : m, t0 = performance.now();
     say(K, m ? '금이 가요.\n같은 힘인데 한 점에 몰렸거든요.' : '손바닥으로 감싸 쥐면\n힘이 껍데기 전체에 고루 실려요.');
     (function f(t) { const k = from == m ? 1 : Math.min((t - t0) / 500, 1), e = 1 - Math.pow(1 - k, 3); tNow = from + (m - from) * e; touch(tNow * 100); if (k < 1) tRaf = requestAnimationFrame(f); })(t0);
-    if (m) { touched = true; main.classList.remove('off'); }
+    seen.add(m); if (seen.size == 2) { touched = true; main.classList.remove('off'); }
   }
   function crack(n) { G('crackA').classList.toggle('on', n >= 1); G('crackB').classList.toggle('on', n >= 2); }
   function say(who, text, quick) {
@@ -389,7 +389,7 @@ html, body { margin:0; height:100%; background:#000; overflow:hidden; -webkit-te
     if (f.t == 'end2') { show(['gHole']); say(C, '이제 길 가다 발밑을 봐라냥.\n맨홀 뚜껑이 죄다 동그랗다냥.'); btn('계속'); }
     if (f.t == 'result') { show(['gStar']); $('#end').classList.add('on'); btn('완료'); }   // 피그마 L06_2 일반 학습 완료
   }
-  function go(d) { const n = at + d; if (n < 0) return; if (n >= FLOW.length) { at = 0; score = 0; touched = false; return render(); } at = n; render(); }
+  function go(d) { const n = at + d; if (n < 0) return; if (n >= FLOW.length) { at = 0; score = 0; touched = false; seen.clear(); return render(); } at = n; render(); }
 
   // 퀴즈: O/X 는 가운데 질문 + 큰 O X, 초성은 글자 입력, 나머지는 줄 목록(고르면 굵게). 해설이 있으면 결과 시트
   function ask(q) {
