@@ -38,7 +38,7 @@ html, body { margin:0; height:100%; background:#000; overflow:hidden; -webkit-te
 #panel .lbl { fill:var(--sub); } #panel .lbl.b { fill:var(--key); }
 #gEgg > use:first-of-type, #qpic use:first-of-type { fill:#F6EBDD !important; }
 #gEgg ellipse[cx="160"], #qpic ellipse[cx="160"] { opacity:.7 !important; }
-.peck path { fill:#F28C28 !important; }
+
 #viz { position:absolute; inset:0; width:100%; height:100%; }
 #viz .g { opacity:0; transition:opacity .3s ease, transform .45s var(--ease); pointer-events:none; }
 #viz .g.on { opacity:1; }
@@ -67,8 +67,9 @@ html, body { margin:0; height:100%; background:#000; overflow:hidden; -webkit-te
 @keyframes pushr { 0%,100% { transform:translateX(0); } 45% { transform:translateX(-7px); } }
 .crack { fill:none; stroke:var(--crack); stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:1; stroke-dashoffset:1; transition:stroke-dashoffset .3s var(--ease); }
 .crack.on { stroke-dashoffset:0; }
-.peck { animation:peck .5s var(--ease) infinite; transform-box:fill-box; }
-@keyframes peck { 0%,100% { transform:translate(0,9px); } 40% { transform:translate(0,0); } }
+.peck { animation:peck .55s var(--ease) infinite; }
+#gPeck.on .crack { stroke-dashoffset:0; transition-delay:.7s; }
+@keyframes peck { 0%,100% { transform:translate(-5px,8px); } 45% { transform:translate(0,0); } }
 #arc { fill:none; stroke:var(--pick); stroke-width:4; stroke-linecap:round; transition:stroke-width .3s ease;
   }
 #viz[data-arc="arch"] #arc { }
@@ -240,7 +241,23 @@ html, body { margin:0; height:100%; background:#000; overflow:hidden; -webkit-te
     <!-- 닿는 넓이 조작 -->
     <g class="g" id="gTouch"><g id="touchArrows"></g></g>
     <!-- 병아리 부리 -->
-    <g class="g" id="gPeck"><g class="peck"><path d="M 196 137 L 205 111 L 214 137 Z" style="fill:var(--ink);stroke:var(--ink);stroke-width:1.5;stroke-linejoin:round"/></g></g>
+    <g class="g" id="gPeck">
+      <g clip-path="url(#eggClip)">
+        <ellipse cx="188" cy="236" rx="74" ry="54" style="fill:#FFE9A8;stroke:var(--ink);stroke-width:2"/>
+        <path class="ol" d="M 150 226 C 170 250 205 252 226 232"/>
+        <g class="peck">
+          <circle cx="232" cy="176" r="30" style="fill:#FFE9A8;stroke:var(--ink);stroke-width:2"/>
+          <path d="M 240 152 L 255 139 L 256 162 Z" style="fill:#F28C28;stroke:var(--ink);stroke-width:2;stroke-linejoin:round"/>
+          <circle cx="236" cy="170" r="3.2" style="fill:var(--ink)"/>
+        </g>
+      </g>
+      <use href="#eggShape" class="ol"/>
+      <path class="crack" pathLength="1" d="M 257 135 l -18 -4 l -9 9"/>
+      <path class="crack" pathLength="1" d="M 257 135 l 11 13 l -3 13"/>
+      <path class="crack" pathLength="1" d="M 257 135 l 14 -10"/>
+      <text class="lbl b" x="300" y="112" text-anchor="middle">한 곳만</text>
+      <path class="ol" style="stroke:var(--sub);stroke-width:1" d="M 286 117 L 264 130"/>
+    </g>
     <!-- 윤곽 → 아치 -->
     <g class="g" id="gArc"><path id="arc"/></g>
     <!-- 끝: 별 · 맨홀 -->
@@ -276,7 +293,7 @@ html, body { margin:0; height:100%; background:#000; overflow:hidden; -webkit-te
     { who: K, say: '껍데기 두께는 0.3~0.4mm,\n신분증 카드 두께의 절반쯤인데요.', on: ['gEgg', 'gThick'], egg: 'cmp', dy: 1, run: count },
     { who: K, say: '비밀은 모양이에요.\n둥근 달걀 끝은 누른 힘을 곡선 따라 껍데기 전체로 퍼뜨려요.', on: ['gEgg', 'gPress', 'gFlow'], dy: 23 },
     { who: K, say: '이번엔 직접 눌러 볼게요.\n누르는 방법을 골라 보세요.', on: ['gEgg', 'gTouch'], dy: 50, ctl: true, run: () => press(null) },
-    { who: K, say: '어미 닭이 올라앉아도 멀쩡한 알을 병아리는 깨요.\n부리로 한 곳만 쪼거든요.', on: ['gEgg', 'gPeck'], dy: 26, crack: 2 },
+    { who: K, say: '어미 닭이 올라앉아도 멀쩡한 알을 병아리는 깨요.\n부리로 한 곳만 쪼거든요.', on: ['gEgg', 'gPeck'], dy: 23 },
     { who: C, say: '둥글어서 버틴다냥?\n숭례문 아래 둥근 문이랑 닮았다냥!', on: ['gGate', 'gArc'], dy: -44, arc: 'door' },
     { who: K, say: '이렇게 둥글게 휜 모양을 아치라고 해요.', on: ['gArc', 'gPiers'], dy: -38, arc: 'arch' },
     { who: K, say: '꼭대기를 누르면 힘이 곡선을 타고 내려가 받침을 아래로, 또 바깥으로 밀어요.', on: ['gArc', 'gPiers', 'gArchF', 'gArchTop', 'gArchLbl'], dy: 7, arc: 'arch' },
