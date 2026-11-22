@@ -2,22 +2,24 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <title>달걀은 왜 양 끝을 쥐면 안 깨질까</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
 <style>
 /* 디자인은 팀 피그마 '01-시작-학습-별자리' 값: 바탕 #161616, 글 #F1F1F1 · #AAAAAA · #747474, 강조 노랑 #FFDE23, 가는 흰 선 · 빛나는 점, 알약 버튼(322x48) */
-:root { --bg:#161616; --ink:#F1F1F1; --sub:#AAAAAA; --mute:#747474; --line:rgba(241,241,241,.16); --border:rgba(241,241,241,.3); --pick:#FFDE23; --ok:#FFDE23; --ng:#F1F1F1; --key:#F1F1F1; --fill:#1F1F1F; --shade:#292929; --ease:cubic-bezier(.2,.7,.2,1); }
-html, body { margin:0; height:100%; background:#050505; overflow:hidden; -webkit-text-size-adjust:100%; }
+:root { --ease:cubic-bezier(.2,.7,.2,1); }
+#stage { --bg:#FFFFFF; --ink:#161616; --sub:#747474; --mute:#AAAAAA; --line:#E4E4E4; --border:#D9D9D9; --pick:#F5B400; --ok:#F5B400; --ng:#161616; --key:#161616; --fill:#F1F1F1; --shade:#E4E4E4; --glow:none; transition:background .35s ease, color .35s ease; }
+#stage.dark { --bg:#161616; --ink:#F1F1F1; --sub:#AAAAAA; --mute:#747474; --line:rgba(241,241,241,.16); --border:rgba(241,241,241,.3); --pick:#FFDE23; --ok:#FFDE23; --ng:#F1F1F1; --key:#F1F1F1; --fill:#1F1F1F; --shade:#292929; --glow:0 0 14px rgba(255,255,255,.45); }
+html, body { margin:0; height:100%; background:#fff; transition:background .35s ease; overflow:hidden; -webkit-text-size-adjust:100%; }
 #stage { position:absolute; left:50%; top:50%; width:402px; height:874px; transform-origin:0 0; background:var(--bg); overflow:hidden;
   font-family:"Noto Sans KR", "Malgun Gothic", sans-serif; color:var(--ink); user-select:none; -webkit-user-select:none; }
 #stage * { box-sizing:border-box; }
 #stage button { font-family:inherit; cursor:pointer; }
 
 /* 위: 뒤로 · 구간 막대 · 지금 구간 */
-#back { position:absolute; left:14px; top:40px; width:44px; height:44px; display:grid; place-items:center; cursor:pointer; }
+#back { position:absolute; left:14px; top:40px; width:44px; height:44px; display:grid; place-items:center; cursor:pointer; color:var(--ink); }
 #top { position:absolute; left:64px; width:314px; top:61px; display:flex; gap:4px; }
 #top .seg { flex:1; height:4px; border-radius:2px; background:var(--line); overflow:hidden; }
 #top .seg i { display:block; height:100%; width:0; border-radius:2px; background:var(--ink); transition:width .3s var(--ease); }
@@ -25,12 +27,12 @@ html, body { margin:0; height:100%; background:#050505; overflow:hidden; -webkit
 
 /* 시각 자료 판: 와프는 y302 h267, 모션 그림이 들어가도록 위로 넓힘(아래 끝 569 는 그대로) */
 /* 그림 판은 앱 화면과 따로: 흰 판 위에 검정 선 · 노랑 포인트 · 빨강 금. 파랑은 쓰지 않는다. 흰 바탕이라 노랑은 앱의 #FFDE23 보다 진한 #F5B400. 별 점등만 판 없이 앱 색 */
-#panel { position:absolute; left:24px; top:196px; width:354px; height:373px; border-radius:16px; overflow:hidden; background:#fff; transition:background .25s; }
+#panel { position:absolute; left:24px; top:196px; width:354px; height:373px; border-radius:16px; overflow:hidden; background:#fff; border:1px solid #E4E4E4; transition:background .25s, border-color .25s; }
 #panel, #qpic {
   --bg:#fff; --ink:#161616; --sub:#8A8A8A; --mute:#D9D9D9; --key:#161616; --pick:#F5B400; --fill:#F1F1F1; --shade:#E9D6BF; --border:#D9D9D9; --crack:#E5484D; }
-#panel.plain { background:transparent; --bg:#161616; --ink:#F1F1F1; }
+#panel.plain { background:transparent; border-color:transparent; --bg:#161616; --ink:#F1F1F1; }
 #panel:not(.plain) .ol, #qpic .ol { stroke-width:2; }
-#qpic { display:none; margin:0 24px 28px; height:190px; border-radius:16px; background:#fff; overflow:hidden; }
+#qpic { display:none; margin:0 24px 28px; height:190px; border-radius:16px; background:#fff; border:1px solid #E4E4E4; overflow:hidden; }
 #qpic.on { display:block; }
 #qpic svg { display:block; width:100%; height:100%; }
 #panel .lbl { fill:var(--sub); } #panel .lbl.b { fill:var(--key); }
@@ -54,6 +56,7 @@ html, body { margin:0; height:100%; background:#050505; overflow:hidden; -webkit
 .g.on .bar { transform:scaleY(1); } .g.on .bar.d2 { transition-delay:.35s; }
 .guide { fill:none; stroke:var(--sub); stroke-width:1; stroke-dasharray:3 4; }
 .half { opacity:0; transition:opacity .25s ease .8s; } .g.on .half { opacity:1; }
+#world { transition:transform .45s var(--ease); }
 #gEgg { transform:translate(0,0) scale(1); transform-origin:195px 215px; }
 #viz[data-egg="cmp"] #gEgg { transform:translate(85px,-67px) scale(.42); }
 #viz[data-egg="crown"] #gEgg { transform:translate(0,8px) rotate(-90deg) scale(.6); }
@@ -90,7 +93,7 @@ html, body { margin:0; height:100%; background:#050505; overflow:hidden; -webkit
 #hint { position:absolute; left:0; right:0; top:760px; text-align:center; font-size:13px; line-height:20px; font-weight:500; color:var(--mute); transition:opacity .2s; }
 
 /* 버튼: 채움 #111 r14 h56, 비활성은 테두리만 */
-.btn { position:absolute; left:40px; top:746px; width:322px; height:48px; border-radius:24px; border:1px solid var(--ink); background:var(--ink); color:var(--bg); font-size:16px; font-weight:500; box-shadow:0 0 14px rgba(255,255,255,.45); transition:background .15s, color .15s, border-color .15s, opacity .2s; }
+.btn { position:absolute; left:40px; top:746px; width:322px; height:48px; border-radius:24px; border:1px solid var(--ink); background:var(--ink); color:var(--bg); font-size:16px; font-weight:500; box-shadow:var(--glow); transition:background .15s, color .15s, border-color .15s, opacity .2s; }
 .btn.off { background:transparent; border-color:var(--mute); color:var(--mute); box-shadow:none; }
 .btn.hide { opacity:0; pointer-events:none; }
 
@@ -98,7 +101,7 @@ html, body { margin:0; height:100%; background:#050505; overflow:hidden; -webkit
 #ctl { position:absolute; left:0; top:662px; width:402px; height:70px; opacity:0; pointer-events:none; transition:opacity .25s; }
 #ctl.on { opacity:1; pointer-events:auto; }
 #ctl .track { position:absolute; left:40px; top:22px; width:322px; height:2px; border-radius:1px; background:var(--line); }
-#ctl .knob { position:absolute; left:38px; top:15px; width:16px; height:16px; margin-left:-6px; border-radius:50%; background:var(--ink); box-shadow:0 0 12px rgba(255,255,255,.8); pointer-events:none; }
+#ctl .knob { position:absolute; left:38px; top:15px; width:16px; height:16px; margin-left:-6px; border-radius:50%; background:var(--ink); box-shadow:var(--glow); pointer-events:none; }
 #ctl input { position:absolute; left:18px; top:0; width:366px; height:44px; margin:0; opacity:0; cursor:pointer; }
 #ctl .ends { position:absolute; left:24px; width:354px; top:45px; display:flex; justify-content:space-between; font-size:12px; line-height:18px; font-weight:500; color:var(--sub); }
 
@@ -114,11 +117,11 @@ html, body { margin:0; height:100%; background:#050505; overflow:hidden; -webkit
 #qo button.sel, #qo button.ok { color:var(--ink); font-weight:700; }
 #qo button.ng { color:var(--sub); font-weight:500; text-decoration:line-through; }
 #qo button:active { scale:.98; }
-#qo button svg { opacity:0; } #qo button.ok svg { opacity:1; }
+#qo button svg { opacity:0; color:var(--pick); } #qo button.ok svg { opacity:1; }
 #qo.ox { display:flex; gap:18px; margin:32px 27px 0; border:0; }
 #qo.ox button { flex:1; height:130px; padding:0; border:0; justify-content:center; }
 #qo.ox button svg { opacity:1; width:86px; height:86px; fill:none; stroke:var(--mute); stroke-width:9; transition:stroke .15s; }
-#qo.ox button.sel svg { stroke:var(--ink); filter:drop-shadow(0 0 8px rgba(255,255,255,.6)); }
+#qo.ox button.sel svg { stroke:var(--ink); }
 #qo.ox button.ok svg { stroke:var(--pick); filter:none; }
 #qo.ox button.dim svg { opacity:.35; filter:none; }
 #qo.ox button:active svg { scale:.94; }
@@ -143,7 +146,7 @@ html, body { margin:0; height:100%; background:#050505; overflow:hidden; -webkit
 </head>
 <body>
 <div id="stage">
-  <div id="back"><svg width="18" height="18" viewBox="0 0 18 18"><path d="M11 2L4 9L11 16" fill="none" stroke="#F1F1F1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  <div id="back"><svg width="18" height="18" viewBox="0 0 18 18"><path d="M11 2L4 9L11 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
   <div id="top"><div class="seg"><i></i></div><div class="seg"><i></i></div><div class="seg"><i></i></div></div>
   <div id="sec"></div>
 
@@ -154,6 +157,7 @@ html, body { margin:0; height:100%; background:#050505; overflow:hidden; -webkit
       <path id="eggTop" d="M 75 215 C 75 150 140 125 205 125 C 270 125 315 165 315 215"/>
       <clipPath id="eggClip"><use href="#eggShape"/></clipPath>
     </defs>
+    <g id="world">
 
     <!-- 숭례문 -->
     <g class="g" id="gGate">
@@ -186,8 +190,8 @@ html, body { margin:0; height:100%; background:#050505; overflow:hidden; -webkit
     </g>
     <g class="g" id="gArchTop">
       <path class="arw" d="M 195 86 L 195 140 M 189.4 131.7 L 195 140 L 200.6 131.7"/>
-      <text class="lbl b" x="195" y="74" text-anchor="middle">꼭대기</text>
     </g>
+    <g class="g" id="gArchLbl"><text class="lbl b" x="195" y="74" text-anchor="middle">꼭대기</text></g>
 
     <!-- 돔 -->
     <g class="g" id="gDome">
@@ -242,6 +246,7 @@ html, body { margin:0; height:100%; background:#050505; overflow:hidden; -webkit
       <path class="ol" d="M 195 131 V 191 M 195 239 V 299 M 111 215 H 171 M 219 215 H 279 M 136 156 L 178 198 M 212 232 L 254 274 M 254 156 L 212 198 M 178 232 L 136 274"/></g>
     </g>
     <g class="g" id="gStar"><circle class="ol" style="stroke-width:1" cx="195" cy="238" r="82"/><circle class="dot" cx="195" cy="238" r="14" style="fill:var(--ink)"/></g>
+  </g>
   </svg>
 
   </div>
@@ -264,16 +269,16 @@ html, body { margin:0; height:100%; background:#050505; overflow:hidden; -webkit
   const K = '별지기', C = '초롱이';
   // 설명 단계: on = 보이는 그림 묶음, egg/arc = 달걀 · 선의 상태, run = 들어올 때 한 번
   const STEPS = [
-    { who: K, say: '정말 잘 안 깨져요.', on: ['gEgg', 'gPress'] },
-    { who: K, say: '껍데기 두께는 0.3~0.4mm,\n신분증 카드 두께의 절반쯤인데요.', on: ['gEgg', 'gThick'], egg: 'cmp', run: count },
-    { who: K, say: '비밀은 모양이에요.\n둥근 달걀 끝은 누른 힘을 곡선 따라 껍데기 전체로 퍼뜨려요.', on: ['gEgg', 'gPress', 'gFlow'] },
-    { who: K, say: '이번엔 직접 눌러 볼게요.\n닿는 곳을 점점 좁혀 보세요.', on: ['gEgg', 'gTouch'], ctl: true, run: () => touch(+$('#rng').value) },
-    { who: K, say: '어미 닭이 올라앉아도 멀쩡한 알을 병아리는 깨요.\n부리로 한 곳만 쪼거든요.', on: ['gEgg', 'gPeck'], crack: 2 },
-    { who: C, say: '둥글어서 버틴다냥?\n숭례문 아래 둥근 문이랑 닮았다냥!', on: ['gGate', 'gArc'], arc: 'door' },
-    { who: K, say: '그 모양이 아치예요.', on: ['gArc', 'gPiers'], arc: 'arch' },
-    { who: K, say: '꼭대기를 누르면 힘이 곡선을 타고 내려가\n받침을 아래로, 또 바깥으로 밀어요.', on: ['gArc', 'gPiers', 'gArchF', 'gArchTop'], arc: 'arch' },
-    { who: K, say: '달걀 끝이 그 꼭대기예요.', on: ['gArc', 'gPiers', 'gArchF', 'gEgg'], arc: 'arch', egg: 'crown' },
-    { who: K, say: '아치를 한 바퀴 돌리면\n로마 판테온 같은 돔 지붕이 돼요.', on: ['gArc', 'gDome'], arc: 'dome' },
+    { who: K, say: '정말 잘 안 깨져요.', on: ['gEgg', 'gPress'], dy: 23 },
+    { who: K, say: '껍데기 두께는 0.3~0.4mm,\n신분증 카드 두께의 절반쯤인데요.', on: ['gEgg', 'gThick'], egg: 'cmp', dy: 1, run: count },
+    { who: K, say: '비밀은 모양이에요.\n둥근 달걀 끝은 누른 힘을 곡선 따라 껍데기 전체로 퍼뜨려요.', on: ['gEgg', 'gPress', 'gFlow'], dy: 23 },
+    { who: K, say: '이번엔 직접 눌러 볼게요.\n닿는 곳을 점점 좁혀 보세요.', on: ['gEgg', 'gTouch'], dy: 50, ctl: true, run: () => touch(+$('#rng').value) },
+    { who: K, say: '어미 닭이 올라앉아도 멀쩡한 알을 병아리는 깨요.\n부리로 한 곳만 쪼거든요.', on: ['gEgg', 'gPeck'], dy: 26, crack: 2 },
+    { who: C, say: '둥글어서 버틴다냥?\n숭례문 아래 둥근 문이랑 닮았다냥!', on: ['gGate', 'gArc'], dy: -44, arc: 'door' },
+    { who: K, say: '이렇게 둥글게 휜 모양을 아치라고 해요.', on: ['gArc', 'gPiers'], dy: -38, arc: 'arch' },
+    { who: K, say: '꼭대기를 누르면 힘이 곡선을 타고 내려가\n받침을 아래로, 또 바깥으로 밀어요.', on: ['gArc', 'gPiers', 'gArchF', 'gArchTop', 'gArchLbl'], dy: 7, arc: 'arch' },
+    { who: K, say: '달걀 끝도 이 꼭대기처럼\n누른 힘을 곡선으로 흘려보내요.', on: ['gArc', 'gPiers', 'gArchF', 'gArchLbl', 'gEgg'], dy: 7, arc: 'arch', egg: 'crown' },
+    { who: K, say: '아치를 한 바퀴 돌리면\n로마 판테온 같은 돔 지붕이 돼요.', on: ['gArc', 'gDome'], dy: -36, arc: 'dome' },
   ];
   const HOOK = { kind: 'ox', pic: true, q: '장 봐 온 달걀, 양 끝을 잡고 꽉 누르면 잘 안 깨진다.', a: true };
   const QUIZ = [
@@ -285,9 +290,9 @@ html, body { margin:0; height:100%; background:#050505; overflow:hidden; -webkit
 
   // 흐름: 후킹 퀴즈 → 설명 → 확인 퀴즈 → 끝
   const FLOW = [{ t: 'hook' }, ...STEPS.map((s, i) => ({ t: 'step', i })), ...QUIZ.map((q, i) => ({ t: 'quiz', i })), { t: 'end' }, { t: 'end2' }, { t: 'result' }];
-  const SPARK = '<svg width="12" height="12" viewBox="0 0 16 16"><path d="M8 0L9.98 6.02L16 8L9.98 9.98L8 16L6.02 9.98L0 8L6.02 6.02L8 0Z" fill="#F1F1F1"/></svg>';
+  const SPARK = '<svg width="12" height="12" viewBox="0 0 16 16"><path d="M8 0L9.98 6.02L16 8L9.98 9.98L8 16L6.02 9.98L0 8L6.02 6.02L8 0Z" fill="currentColor"/></svg>';
   const STAR = c => `<svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 0L9.98 6.02L16 8L9.98 9.98L8 16L6.02 9.98L0 8L6.02 6.02L8 0Z" fill="none" stroke="${c}" stroke-width="1.37"/></svg>`;
-  const CHECK = '<svg width="16" height="12" viewBox="0 0 16 12"><path d="M1 6L6 11L15 1" fill="none" stroke="#FFDE23" stroke-width="2.4"/></svg>';
+  const CHECK = '<svg width="16" height="12" viewBox="0 0 16 12"><path d="M1 6L6 11L15 1" fill="none" stroke="currentColor" stroke-width="2.4"/></svg>';
   const OX = ['<svg viewBox="0 0 86 86"><circle cx="43" cy="43" r="38"/></svg>', '<svg viewBox="0 0 86 86"><path d="M8 8L78 78M78 8L8 78"/></svg>'];
   let at = 0, touched = false, score = 0;
   const main = $('#main');
@@ -332,7 +337,8 @@ html, body { margin:0; height:100%; background:#050505; overflow:hidden; -webkit
   function btn(label, off) { main.textContent = label || ''; main.classList.toggle('hide', !label); main.classList.toggle('off', !!off); }
   function render() {
     const f = FLOW[at], isQ = f.t == 'hook' || f.t == 'quiz'; bar();
-    $('#panel').classList.toggle('plain', f.t == 'end' || f.t == 'result');
+    const dark = f.t == 'end' || f.t == 'end2' || f.t == 'result'; $('#stage').classList.toggle('dark', dark); document.body.style.background = document.documentElement.style.background = dark ? '#161616' : '#fff';
+    $('#panel').classList.toggle('plain', f.t == 'end' || f.t == 'result'); G('world').style.transform = `translate(0, ${f.t == 'step' ? STEPS[f.i].dy || 0 : 0}px)`;
     $('#quiz').classList.toggle('on', isQ); $('#quiz').classList.remove('res'); $('#sheet').classList.remove('on');
     $('#ctl').classList.remove('on'); $('#end').classList.remove('on'); $('#talk').style.opacity = f.t == 'result' ? 0 : 1; btn();
     $('#hint').style.opacity = f.t == 'step' && !STEPS[f.i].ctl ? 1 : 0;
