@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>달걀은 왜 양 끝을 쥐면 안 깨질까</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* 디자인은 팀 피그마 '01-시작-학습-별자리' 값: 바탕 #161616, 글 #F1F1F1 · #AAAAAA · #747474, 강조 노랑 #FFDE23, 가는 흰 선 · 빛나는 점, 알약 버튼(322x48) */
+:root { --bg:#161616; --ink:#F1F1F1; --sub:#AAAAAA; --mute:#747474; --line:rgba(241,241,241,.16); --border:rgba(241,241,241,.3); --pick:#FFDE23; --ok:#FFDE23; --ng:#F1F1F1; --key:#F1F1F1; --fill:#1F1F1F; --shade:#292929; --ease:cubic-bezier(.2,.7,.2,1); }
+html, body { margin:0; height:100%; background:#050505; overflow:hidden; -webkit-text-size-adjust:100%; }
+#stage { position:absolute; left:50%; top:50%; width:402px; height:874px; transform-origin:0 0; background:var(--bg); overflow:hidden;
+  font-family:"Noto Sans KR", "Malgun Gothic", sans-serif; color:var(--ink); user-select:none; -webkit-user-select:none; }
+#stage * { box-sizing:border-box; }
+#stage button { font-family:inherit; cursor:pointer; }
+
+/* 위: 뒤로 · 구간 막대 · 지금 구간 */
+#back { position:absolute; left:14px; top:40px; width:44px; height:44px; display:grid; place-items:center; cursor:pointer; }
+#top { position:absolute; left:64px; width:314px; top:61px; display:flex; gap:4px; }
+#top .seg { flex:1; height:4px; border-radius:2px; background:var(--line); overflow:hidden; }
+#top .seg i { display:block; height:100%; width:0; border-radius:2px; background:var(--ink); transition:width .3s var(--ease); }
+#sec { position:absolute; left:64px; top:74px; font-size:13px; line-height:20px; font-weight:500; color:var(--sub); }
+
+/* 시각 자료 판: 와프는 y302 h267, 모션 그림이 들어가도록 위로 넓힘(아래 끝 569 는 그대로) */
+/* 그림 판은 앱 화면과 따로: 흰 판 위에 검정 선 · 노랑 포인트 · 빨강 금. 파랑은 쓰지 않는다. 흰 바탕이라 노랑은 앱의 #FFDE23 보다 진한 #F5B400. 별 점등만 판 없이 앱 색 */
+#panel { position:absolute; left:24px; top:196px; width:354px; height:373px; border-radius:16px; overflow:hidden; background:#fff; transition:background .25s; }
+#panel, #qpic {
+  --bg:#fff; --ink:#161616; --sub:#8A8A8A; --mute:#D9D9D9; --key:#161616; --pick:#F5B400; --fill:#F1F1F1; --shade:#E9D6BF; --border:#D9D9D9; --crack:#E5484D; }
+#panel.plain { background:transparent; --bg:#161616; --ink:#F1F1F1; }
+#panel:not(.plain) .ol, #qpic .ol { stroke-width:2; }
+#qpic { display:none; margin:0 24px 28px; height:190px; border-radius:16px; background:#fff; overflow:hidden; }
+#qpic.on { display:block; }
+#qpic svg { display:block; width:100%; height:100%; }
+#panel .lbl { fill:var(--sub); } #panel .lbl.b { fill:var(--key); }
+#gEgg > use:first-of-type, #qpic use:first-of-type { fill:#F6EBDD !important; }
+#gEgg ellipse[cx="160"], #qpic ellipse[cx="160"] { opacity:.7 !important; }
+.peck path { fill:#F28C28 !important; }
+#viz { position:absolute; inset:0; width:100%; height:100%; }
+#viz .g { opacity:0; transition:opacity .3s ease, transform .45s var(--ease); pointer-events:none; }
+#viz .g.on { opacity:1; }
+.ol { fill:none; stroke:var(--ink); stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; }
+.lbl { font-size:13px; font-weight:500; fill:var(--mute); }
+.lbl.b { fill:var(--key); font-weight:700; }
+.num { font-size:20px; font-weight:700; fill:var(--ink); font-variant-numeric:tabular-nums; }
+.draw { fill:none; stroke:var(--pick); stroke-width:3; stroke-linecap:round; stroke-dasharray:1; stroke-dashoffset:1; transition:stroke-dashoffset .45s var(--ease); }
+.g.on .draw { stroke-dashoffset:0; }
+.flow { fill:none; stroke:var(--bg); stroke-width:3; stroke-linecap:butt; stroke-dasharray:3 9; animation:flow 1s linear infinite; opacity:0; transition:opacity .2s ease .45s; }
+.g.on .flow { opacity:.9; }
+@keyframes flow { to { stroke-dashoffset:-12; } }
+.arw { fill:none; stroke:var(--pick); stroke-width:3; stroke-linecap:round; stroke-linejoin:round; }
+.bar { transform-box:fill-box; transform-origin:center bottom; transform:scaleY(0); transition:transform .45s var(--ease) .2s; }
+.g.on .bar { transform:scaleY(1); } .g.on .bar.d2 { transition-delay:.35s; }
+.guide { fill:none; stroke:var(--sub); stroke-width:1; stroke-dasharray:3 4; }
+.half { opacity:0; transition:opacity .25s ease .8s; } .g.on .half { opacity:1; }
+#gEgg { transform:translate(0,0) scale(1); transform-origin:195px 215px; }
+#viz[data-egg="cmp"] #gEgg { transform:translate(85px,-67px) scale(.42); }
+#viz[data-egg="crown"] #gEgg { transform:translate(0,8px) rotate(-90deg) scale(.6); }
+#viz[data-egg="shake"] #gEgg { animation:shake .28s linear; }
+@keyframes shake { 25% { transform:translate(-3px,1px); } 50% { transform:translate(3px,-1px); } 75% { transform:translate(-2px,0); } }
+.push { animation:push 1.4s var(--ease) infinite; } .push.r { animation-name:pushr; }
+@keyframes push { 0%,100% { transform:translateX(0); } 45% { transform:translateX(7px); } }
+@keyframes pushr { 0%,100% { transform:translateX(0); } 45% { transform:translateX(-7px); } }
+.crack { fill:none; stroke:var(--crack); stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:1; stroke-dashoffset:1; transition:stroke-dashoffset .3s var(--ease); }
+.crack.on { stroke-dashoffset:0; }
+.peck { animation:peck .5s var(--ease) infinite; transform-box:fill-box; }
+@keyframes peck { 0%,100% { transform:translate(0,9px); } 40% { transform:translate(0,0); } }
+#arc { fill:none; stroke:var(--pick); stroke-width:4; stroke-linecap:round; transition:d .5s var(--ease), stroke-width .3s ease;
+  d:path("M 75 215 C 75 150 140 125 205 125 C 270 125 315 165 315 215"); }
+#viz[data-arc="arch"] #arc { d:path("M 95 340 C 95 205 135 150 195 150 C 255 150 295 205 295 340"); }
+#viz[data-arc="door"] #arc { d:path("M 163 330 C 163 310 177 298 195 298 C 213 298 227 310 227 330"); stroke-width:3; }
+#viz[data-arc="dome"] #arc { d:path("M 95 340 C 95 205 135 150 195 150 C 255 150 295 205 295 340"); stroke-width:2.5; }
+#gDome ellipse, #gDome path { fill:none; stroke:var(--pick); stroke-width:2.5; opacity:0; transition:opacity .25s ease; }
+#gDome.on .k1 { opacity:1; transition-delay:.1s; } #gDome.on .k2 { opacity:.8; transition-delay:.22s; } #gDome.on .k3 { opacity:.6; transition-delay:.34s; } #gDome.on .k4 { opacity:1; transition-delay:.46s; }
+#gStar .dot { transform-origin:195px 238px; transform:scale(0); transition:transform .5s var(--ease) .15s; filter:drop-shadow(0 0 10px rgba(255,255,255,.9)); }
+#gStar.on .dot { transform:scale(1); }
+
+/* 대사: 화자 이름 13 Bold + 대사 17 Medium (와프 y585) */
+#talk { position:absolute; left:24px; width:354px; top:585px; transition:opacity .25s; }
+#who { display:flex; align-items:center; gap:8px; font-size:13px; line-height:20px; font-weight:700; margin-bottom:4px; color:var(--sub); }
+#who svg { display:block; }
+#say { font-size:17px; line-height:26px; font-weight:500; word-break:keep-all; white-space:pre-line; transition:opacity .2s ease, translate .25s var(--ease); }
+#say.out { opacity:0; translate:0 6px; transition:none; }
+#end { position:absolute; left:24px; width:354px; top:500px; text-align:center; opacity:0; transition:opacity .3s ease .2s; pointer-events:none; }
+#end.on { opacity:1; }
+#end b { display:block; font-size:24px; line-height:29px; } #end span { display:inline-block; margin-top:20px; padding-bottom:4px; border-bottom:1px solid var(--sub); font-size:14px; line-height:16px; font-weight:500; color:var(--sub); }
+#end em { display:flex; justify-content:center; align-items:center; gap:8px; margin-top:36px; font-style:normal; font-size:16px; line-height:19px; font-weight:700; color:var(--pick); }
+#end i { display:block; margin-top:12px; font-style:normal; font-size:14px; line-height:17px; font-weight:500; color:var(--ink); }
+#hint { position:absolute; left:0; right:0; top:760px; text-align:center; font-size:13px; line-height:20px; font-weight:500; color:var(--mute); transition:opacity .2s; }
+
+/* 버튼: 채움 #111 r14 h56, 비활성은 테두리만 */
+.btn { position:absolute; left:40px; top:746px; width:322px; height:48px; border-radius:24px; border:1px solid var(--ink); background:var(--ink); color:var(--bg); font-size:16px; font-weight:500; box-shadow:0 0 14px rgba(255,255,255,.45); transition:background .15s, color .15s, border-color .15s, opacity .2s; }
+.btn.off { background:transparent; border-color:var(--mute); color:var(--mute); box-shadow:none; }
+.btn.hide { opacity:0; pointer-events:none; }
+
+/* 조작: 와프 슬라이더(트랙 2px, 손잡이 막대 4x24) */
+#ctl { position:absolute; left:0; top:662px; width:402px; height:70px; opacity:0; pointer-events:none; transition:opacity .25s; }
+#ctl.on { opacity:1; pointer-events:auto; }
+#ctl .track { position:absolute; left:40px; top:22px; width:322px; height:2px; border-radius:1px; background:var(--line); }
+#ctl .knob { position:absolute; left:38px; top:15px; width:16px; height:16px; margin-left:-6px; border-radius:50%; background:var(--ink); box-shadow:0 0 12px rgba(255,255,255,.8); pointer-events:none; }
+#ctl input { position:absolute; left:18px; top:0; width:366px; height:44px; margin:0; opacity:0; cursor:pointer; }
+#ctl .ends { position:absolute; left:24px; width:354px; top:45px; display:flex; justify-content:space-between; font-size:12px; line-height:18px; font-weight:500; color:var(--sub); }
+
+/* 퀴즈 */
+#quiz { position:absolute; inset:100px 0 0 0; background:var(--bg); opacity:0; pointer-events:none; transition:opacity .25s; }
+#quiz.on { opacity:1; pointer-events:auto; }
+#qbody { position:absolute; left:0; right:0; top:0; height:640px; display:flex; flex-direction:column; justify-content:center; transition:translate .3s var(--ease); }
+#quiz.res #qbody { translate:0 -110px; }
+#qq { margin:0 24px; font-size:20px; line-height:30px; font-weight:700; word-break:keep-all; }
+#qq.c { text-align:center; }
+#qo { margin:32px 24px 0; border-top:1px solid var(--line); }
+#qo button { display:flex; align-items:center; justify-content:space-between; width:100%; height:64px; padding:0 8px 0 20px; border:0; border-bottom:1px solid var(--line); background:transparent; font-size:17px; font-weight:500; color:var(--mute); text-align:left; transition:color .15s; }
+#qo button.sel, #qo button.ok { color:var(--ink); font-weight:700; }
+#qo button.ng { color:var(--sub); font-weight:500; text-decoration:line-through; }
+#qo button:active { scale:.98; }
+#qo button svg { opacity:0; } #qo button.ok svg { opacity:1; }
+#qo.ox { display:flex; gap:18px; margin:32px 27px 0; border:0; }
+#qo.ox button { flex:1; height:130px; padding:0; border:0; justify-content:center; }
+#qo.ox button svg { opacity:1; width:86px; height:86px; fill:none; stroke:var(--mute); stroke-width:9; transition:stroke .15s; }
+#qo.ox button.sel svg { stroke:var(--ink); filter:drop-shadow(0 0 8px rgba(255,255,255,.6)); }
+#qo.ox button.ok svg { stroke:var(--pick); filter:none; }
+#qo.ox button.dim svg { opacity:.35; filter:none; }
+#qo.ox button:active svg { scale:.94; }
+#qo.cho { border:0; }
+#qo.cho .box { position:relative; width:220px; height:72px; margin:0 auto; border:1.5px solid var(--border); border-radius:14px; display:flex; justify-content:center; align-items:center; gap:14px; transition:border-color .15s; }
+#qo.cho .box.focus { border-color:var(--ink); }
+#qo.cho .box.ok { border-color:var(--pick); }
+#qo.cho .box span { width:40px; font-size:30px; line-height:44px; font-weight:700; text-align:center; color:var(--mute); border-bottom:2px solid transparent; transition:color .15s; }
+#qo.cho .box span.in { color:var(--ink); }
+#qo.cho .box.focus span.cur { border-bottom-color:var(--pick); }
+#qo.cho .box.ng span { color:var(--sub); text-decoration:line-through; }
+#qo.cho input { position:absolute; inset:0; width:100%; height:100%; border:0; outline:0; background:transparent; color:transparent; caret-color:transparent; font-size:16px; text-align:center; opacity:.01; }
+#sheet { position:absolute; left:0; right:0; bottom:0; min-height:234px; padding:28px 24px 34px; background:#F1F1F1; color:#161616; border-radius:24px 24px 0 0; translate:0 110%; transition:translate .3s var(--ease); }
+#sheet.on { translate:0 0; }
+#sheet::before { content:""; position:absolute; left:181px; top:10px; width:40px; height:4px; border-radius:2px; background:#AAAAAA; }
+#sr { display:flex; align-items:center; gap:6px; font-size:15px; line-height:22px; font-weight:700; color:#161616; }
+#sr.ng { color:#161616; }
+#se { margin:12px 0 24px; font-size:17px; line-height:26px; font-weight:500; word-break:keep-all; }
+#sheet .btn { position:static; display:block; margin:0 auto; background:#161616; border-color:#161616; color:#F1F1F1; box-shadow:none; }
+#quiz > .btn { top:646px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="back"><svg width="18" height="18" viewBox="0 0 18 18"><path d="M11 2L4 9L11 16" fill="none" stroke="#F1F1F1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  <div id="top"><div class="seg"><i></i></div><div class="seg"><i></i></div><div class="seg"><i></i></div></div>
+  <div id="sec"></div>
+
+  <div id="panel">
+  <svg id="viz" viewBox="2 60 386 356" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <path id="eggShape" d="M 75 215 C 75 150 140 125 205 125 C 270 125 315 165 315 215 C 315 265 270 305 205 305 C 140 305 75 280 75 215 Z"/>
+      <path id="eggTop" d="M 75 215 C 75 150 140 125 205 125 C 270 125 315 165 315 215"/>
+      <clipPath id="eggClip"><use href="#eggShape"/></clipPath>
+    </defs>
+
+    <!-- 숭례문 -->
+    <g class="g" id="gGate">
+      <path class="ol" style="fill:var(--bg)" d="M 96 168 Q 195 150 294 168 L 280 190 L 110 190 Z"/>
+      <rect class="ol" style="fill:var(--bg)" x="124" y="190" width="142" height="26"/>
+      <path class="ol" style="fill:var(--bg)" d="M 70 222 Q 195 198 320 222 L 300 250 L 90 250 Z"/>
+      <path class="ol" style="fill:var(--fill)" d="M 60 250 H 330 L 344 372 H 46 Z"/>
+      <path class="ol" style="fill:var(--bg)" d="M 163 372 V 330 C 163 310 177 298 195 298 C 213 298 227 310 227 330 V 372 Z"/>
+      <path class="ol" style="stroke:var(--border)" d="M 72 290 H 150 M 240 290 H 322 M 62 330 H 150 M 240 330 H 330"/>
+      <line class="ol" x1="30" y1="372" x2="360" y2="372"/>
+      <text class="lbl b" x="195" y="402" text-anchor="middle">숭례문</text>
+    </g>
+
+    <!-- 아치: 받침 · 힘 -->
+    <g class="g" id="gPiers">
+      <rect class="ol" style="fill:var(--fill)" x="66" y="340" width="58" height="40"/>
+      <rect class="ol" style="fill:var(--fill)" x="266" y="340" width="58" height="40"/>
+      <line class="ol" x1="30" y1="380" x2="360" y2="380"/>
+      <text class="lbl" x="95" y="400" text-anchor="middle">받침 · 아래로</text><text class="lbl" x="295" y="400" text-anchor="middle">받침 · 아래로</text>
+    </g>
+    <g class="g" id="gArchF">
+      <path class="flow" pathLength="120" d="M 195 150 C 135 150 95 205 95 340"/>
+      <path class="flow" pathLength="120" d="M 195 150 C 255 150 295 205 295 340"/>
+      <g style="transition:opacity .25s ease .5s" class="feet">
+        <path class="arw" d="M 58 356 L 18 356 M 26.3 350.4 L 18 356 L 26.3 361.6"/>
+        <path class="arw" d="M 332 356 L 372 356 M 363.7 361.6 L 372 356 L 363.7 350.4"/>
+        <path class="arw" d="M 95 347 L 95 373 M 91 367.2 L 95 373 L 99 367.2"/><path class="arw" d="M 295 347 L 295 373 M 291 367.2 L 295 373 L 299 367.2"/>
+        <text class="lbl" x="34" y="338" text-anchor="middle">바깥으로</text><text class="lbl" x="356" y="338" text-anchor="middle">바깥으로</text>
+      </g>
+    </g>
+    <g class="g" id="gArchTop">
+      <path class="arw" d="M 195 86 L 195 140 M 189.4 131.7 L 195 140 L 200.6 131.7"/>
+      <text class="lbl b" x="195" y="74" text-anchor="middle">꼭대기</text>
+    </g>
+
+    <!-- 돔 -->
+    <g class="g" id="gDome">
+      <path class="k1" d="M 109 340 C 109 205 145 150 195 150 C 245 150 281 205 281 340"/>
+      <path class="k2" d="M 145 340 C 145 205 166 150 195 150 C 224 150 245 205 245 340"/>
+      <path class="k3" d="M 195 150 V 340"/>
+      <ellipse class="k4" cx="195" cy="340" rx="100" ry="20"/>
+      <ellipse class="k4" cx="195" cy="158" rx="16" ry="5"/>
+      <text class="lbl b" x="195" y="394" text-anchor="middle">돔 지붕 · 로마 판테온</text>
+    </g>
+
+    <!-- 달걀 -->
+    <g class="g on" id="gEgg">
+      <use href="#eggShape" style="fill:var(--fill)"/>
+      <g clip-path="url(#eggClip)"><ellipse cx="215" cy="330" rx="150" ry="60" style="fill:var(--shade)"/><ellipse cx="160" cy="165" rx="34" ry="14" style="fill:#fff;opacity:.1" transform="rotate(-18 160 165)"/></g>
+      <use href="#eggShape" class="ol"/>
+      <path id="crackA" class="crack" pathLength="1" d="M 205 125 l -8 22 l 14 12 l -10 20 l 12 14"/>
+      <path id="crackB" class="crack" pathLength="1" d="M 211 159 l 22 6 l 8 18 M 197 147 l -22 10 l -6 20"/>
+    </g>
+
+    <!-- 양 끝 누르기 -->
+    <g class="g" id="gPress">
+      <g class="push"><path class="arw" d="M 20 215 L 66 215 M 57.7 220.6 L 66 215 L 57.7 209.4"/></g>
+      <g class="push r"><path class="arw" d="M 370 215 L 324 215 M 332.3 209.4 L 324 215 L 332.3 220.6"/></g>
+    </g>
+    <!-- 곡선 따라 퍼지는 힘 -->
+    <g class="g" id="gFlow">
+      <path class="draw" pathLength="1" d="M 75 215 C 75 150 140 125 205 125"/><path class="draw" pathLength="1" d="M 75 215 C 75 280 140 305 205 305"/><path class="draw" pathLength="1" d="M 315 215 C 315 165 270 125 205 125"/><path class="draw" pathLength="1" d="M 315 215 C 315 265 270 305 205 305"/>
+      <path class="flow" pathLength="120" d="M 75 215 C 75 150 140 125 205 125"/><path class="flow" pathLength="120" d="M 75 215 C 75 280 140 305 205 305"/><path class="flow" pathLength="120" d="M 315 215 C 315 165 270 125 205 125"/><path class="flow" pathLength="120" d="M 315 215 C 315 265 270 305 205 305"/>
+    </g>
+    <!-- 두께 비교 -->
+    <g class="g" id="gThick">
+      <rect class="ol" style="fill:var(--bg)" x="68" y="121" width="84" height="54" rx="6"/><rect x="77" y="131" width="22" height="26" rx="2" style="fill:var(--mute)"/><path class="ol" style="stroke:var(--border)" d="M 108 136 H 142 M 108 147 H 142 M 108 158 H 130"/>
+      <path class="guide" d="M 68 175 L 60 284 M 152 175 L 160 284 M 262 185 L 230 309 M 298 185 L 330 309"/>
+      <rect class="bar ol" x="60" y="284" width="100" height="46" rx="3" style="fill:var(--mute)"/>
+      <rect class="bar d2 ol" x="230" y="309" width="100" height="21" rx="3" style="fill:#F6EBDD"/>
+      <line class="ol" x1="40" y1="330" x2="350" y2="330"/>
+      <g class="half"><path d="M 160 309 H 230" style="fill:none;stroke:var(--pick);stroke-width:2;stroke-dasharray:4 4"/><text class="lbl" x="195" y="302" text-anchor="middle" style="fill:var(--pick);font-weight:700">절반쯤</text></g>
+      <text class="lbl b" x="110" y="354" text-anchor="middle">신분증 카드</text><text class="num" x="110" y="382" text-anchor="middle" id="n1">0.76 mm</text>
+      <text class="lbl b" x="280" y="354" text-anchor="middle">달걀 껍데기</text><text class="num" x="280" y="382" text-anchor="middle" id="n2">0.35 mm</text>
+      <text class="lbl" x="195" y="100" text-anchor="middle">두께를 크게 확대하면</text>
+    </g>
+    <!-- 닿는 넓이 조작 -->
+    <g class="g" id="gTouch"><g id="touchArrows"></g></g>
+    <!-- 병아리 부리 -->
+    <g class="g" id="gPeck"><g class="peck"><path d="M 196 137 L 205 111 L 214 137 Z" style="fill:var(--ink);stroke:var(--ink);stroke-width:1.5;stroke-linejoin:round"/></g></g>
+    <!-- 윤곽 → 아치 -->
+    <g class="g" id="gArc"><path id="arc"/></g>
+    <!-- 끝: 별 · 맨홀 -->
+    <g class="g" id="gHole">
+      <g transform="translate(0,23)"><circle class="ol" style="fill:var(--fill)" cx="195" cy="215" r="104"/><circle class="ol" cx="195" cy="215" r="84"/><circle class="ol" style="fill:var(--bg)" cx="195" cy="215" r="24"/>
+      <path class="ol" d="M 195 131 V 191 M 195 239 V 299 M 111 215 H 171 M 219 215 H 279 M 136 156 L 178 198 M 212 232 L 254 274 M 254 156 L 212 198 M 178 232 L 136 274"/></g>
+    </g>
+    <g class="g" id="gStar"><circle class="ol" style="stroke-width:1" cx="195" cy="238" r="82"/><circle class="dot" cx="195" cy="238" r="14" style="fill:var(--ink)"/></g>
+  </svg>
+
+  </div>
+  <div id="talk"><div id="who"></div><div id="say"></div></div>
+  <div id="end"><b>별을 밝혔어요 !</b><span>달걀은 왜 양 끝을 쥐면 안 깨질까</span><em><svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 0L9.98 6.02L16 8L9.98 9.98L8 16L6.02 9.98L0 8L6.02 6.02L8 0Z" fill="#FFDE23"/></svg>별가루 +10</em><i>에너지 -1</i></div>
+  <div id="ctl"><div class="track"></div><div class="knob" id="knob"></div><input type="range" min="0" max="100" value="0" id="rng"><div class="ends"><span>손바닥으로 넓게</span><span>한 점</span></div></div>
+  <button class="btn hide" id="main">계속</button>
+  <div id="hint">화면을 누르면 넘어가요</div>
+
+  <div id="quiz"><div id="qbody">
+      <div id="qpic"><svg viewBox="2 95 386 240"><use href="#eggShape" style="fill:var(--fill)"/><g clip-path="url(#eggClip)"><ellipse cx="215" cy="330" rx="150" ry="60" style="fill:var(--shade)"/><ellipse cx="160" cy="165" rx="34" ry="14" style="fill:#fff" transform="rotate(-18 160 165)"/></g><use href="#eggShape" class="ol"/>
+        <g class="push"><path class="arw" d="M 20 215 L 66 215 M 57.7 220.6 L 66 215 L 57.7 209.4"/></g><g class="push r"><path class="arw" d="M 370 215 L 324 215 M 332.3 209.4 L 324 215 L 332.3 220.6"/></g></svg></div>
+      <div id="qq"></div><div id="qo"></div></div><button class="btn off" id="qc">확인</button>
+    <div id="sheet"><div id="sr"></div><p id="se"></p><button class="btn" id="sn">계속</button></div></div>
+</div>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s), viz = $('#viz'), G = id => $('#' + id);
+  const K = '별지기', C = '초롱이';
+  // 설명 단계: on = 보이는 그림 묶음, egg/arc = 달걀 · 선의 상태, run = 들어올 때 한 번
+  const STEPS = [
+    { who: K, say: '정말 잘 안 깨져요.', on: ['gEgg', 'gPress'] },
+    { who: K, say: '껍데기 두께는 0.3~0.4mm,\n신분증 카드 두께의 절반쯤인데요.', on: ['gEgg', 'gThick'], egg: 'cmp', run: count },
+    { who: K, say: '비밀은 모양이에요.\n둥근 달걀 끝은 누른 힘을 곡선 따라 껍데기 전체로 퍼뜨려요.', on: ['gEgg', 'gPress', 'gFlow'] },
+    { who: K, say: '이번엔 직접 눌러 볼게요.\n닿는 곳을 점점 좁혀 보세요.', on: ['gEgg', 'gTouch'], ctl: true, run: () => touch(+$('#rng').value) },
+    { who: K, say: '어미 닭이 올라앉아도 멀쩡한 알을 병아리는 깨요.\n부리로 한 곳만 쪼거든요.', on: ['gEgg', 'gPeck'], crack: 2 },
+    { who: C, say: '둥글어서 버틴다냥?\n숭례문 아래 둥근 문이랑 닮았다냥!', on: ['gGate', 'gArc'], arc: 'door' },
+    { who: K, say: '그 모양이 아치예요.', on: ['gArc', 'gPiers'], arc: 'arch' },
+    { who: K, say: '꼭대기를 누르면 힘이 곡선을 타고 내려가\n받침을 아래로, 또 바깥으로 밀어요.', on: ['gArc', 'gPiers', 'gArchF', 'gArchTop'], arc: 'arch' },
+    { who: K, say: '달걀 끝이 그 꼭대기예요.', on: ['gArc', 'gPiers', 'gArchF', 'gEgg'], arc: 'arch', egg: 'crown' },
+    { who: K, say: '아치를 한 바퀴 돌리면\n로마 판테온 같은 돔 지붕이 돼요.', on: ['gArc', 'gDome'], arc: 'dome' },
+  ];
+  const HOOK = { kind: 'ox', pic: true, q: '장 봐 온 달걀, 양 끝을 잡고 꽉 누르면 잘 안 깨진다.', a: true };
+  const QUIZ = [
+    { kind: 'chosung', q: '달걀 껍데기와 숭례문 문이 같이 쓰는 둥근 구조는?', hint: 'ㅇㅊ', a: ['아치'], e: '아치. 둥글게 휘어서 누르는 힘을 한곳에 두지 않고 곡선 따라 흘려보내요.' },
+    { kind: 'ox', q: '같은 힘이면 손바닥으로 누르나 손톱 끝으로 누르나 달걀엔 똑같다.', a: false, e: '같은 힘도 닿는 곳이 좁으면 한 점에 몰려요. 손바닥은 힘을 퍼뜨리고, 손톱 끝은 한 점을 눌러요.' },
+    { kind: 'multi', q: '달걀 껍데기와 같은 원리로 버티는 것을 모두 고르세요.', o: ['둥근 기둥', '아치 다리', '돔 지붕', '판자 다리'], a: [1, 2], e: '아치 다리와 돔 지붕은 휜 곡선으로 힘을 받침까지 흘려보내요. 기둥은 둥글어도 곧게 서서 받치고, 판자는 곧게 놓여 있어요.' },
+    { kind: 'single', q: '반지 낀 친구가 달걀을 꽉 쥐다 깨뜨렸어요. 왜일까요?', o: ['반지에 힘이 몰려서', '손힘이 너무 세서', '달걀이 오래돼서'], a: 0, e: '반지가 닿은 한 점에 힘이 몰렸어요. 맨손으로 감싸 쥐면 힘이 고루 퍼져서 잘 안 깨져요.' },
+  ];
+
+  // 흐름: 후킹 퀴즈 → 설명 → 확인 퀴즈 → 끝
+  const FLOW = [{ t: 'hook' }, ...STEPS.map((s, i) => ({ t: 'step', i })), ...QUIZ.map((q, i) => ({ t: 'quiz', i })), { t: 'end' }, { t: 'end2' }, { t: 'result' }];
+  const SPARK = '<svg width="12" height="12" viewBox="0 0 16 16"><path d="M8 0L9.98 6.02L16 8L9.98 9.98L8 16L6.02 9.98L0 8L6.02 6.02L8 0Z" fill="#F1F1F1"/></svg>';
+  const STAR = c => `<svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 0L9.98 6.02L16 8L9.98 9.98L8 16L6.02 9.98L0 8L6.02 6.02L8 0Z" fill="none" stroke="${c}" stroke-width="1.37"/></svg>`;
+  const CHECK = '<svg width="16" height="12" viewBox="0 0 16 12"><path d="M1 6L6 11L15 1" fill="none" stroke="#FFDE23" stroke-width="2.4"/></svg>';
+  const OX = ['<svg viewBox="0 0 86 86"><circle cx="43" cy="43" r="38"/></svg>', '<svg viewBox="0 0 86 86"><path d="M8 8L78 78M78 8L8 78"/></svg>'];
+  let at = 0, touched = false, score = 0;
+  const main = $('#main');
+
+  function count() {
+    for (const [id, v] of [['n1', .76], ['n2', .35]]) { const e = G(id), t0 = performance.now();
+      (function f(t) { const k = Math.min((t - t0) / 400, 1); e.textContent = (v * k).toFixed(2) + ' mm'; if (k < 1) requestAnimationFrame(f); })(t0); }
+  }
+  // 닿는 넓이: t 0(넓게) → 1(한 점). 화살표 9개가 위쪽에 퍼져 있다가 꼭대기 한 점으로 모이고 길어진다
+  const eggTop = G('eggTop'), EL = eggTop.getTotalLength();
+  let ES = 0; for (let k = 0, m = 1e9; k <= 200; k++) { const y = eggTop.getPointAtLength(EL * k / 200).y; if (y < m) { m = y; ES = EL * k / 200; } }   // 껍데기에서 가장 높은 점
+  function touch(v) {
+    const t = v / 100, n = 5, mid = 2, spread = EL * .56 * (1 - t), L = 16 + 44 * t, w = 5 + 4 * t; let h = '';
+    for (let i = 0; i < n; i++) {
+      const at_ = ES + (i - mid) * spread / (n - 1), P = eggTop.getPointAtLength(at_), A = eggTop.getPointAtLength(at_ - 1), B = eggTop.getPointAtLength(at_ + 1);
+      let dx = -(B.y - A.y), dy = B.x - A.x; const d = Math.hypot(dx, dy) || 1; dx /= d; dy /= d; if (dy > 0) { dx = -dx; dy = -dy; }   // 껍데기 바깥쪽
+      const x = P.x + dx * 4, y = P.y + dy * 4, x2 = x + dx * (L + 12), y2 = y + dy * (L + 12), px = -dy, py = dx, hd = 8 + 3 * t;
+      h += `<path class="arw" style="stroke-width:${2.5 + 1.5 * t};opacity:${t > .97 && i != mid ? 0 : 1}" d="M ${x2} ${y2} L ${x} ${y} M ${x + dx * hd + px * hd * .7} ${y + dy * hd + py * hd * .7} L ${x} ${y} L ${x + dx * hd - px * hd * .7} ${y + dy * hd - py * hd * .7}"/>`;
+    }
+    G('touchArrows').innerHTML = h; $('#knob').style.left = 38 + 322 * t + 'px';
+    const was = G('crackA').classList.contains('on');
+    crack(t > .85 ? (t > .97 ? 2 : 1) : 0);
+    if (t > .85 && !was) { viz.dataset.egg = 'shake'; setTimeout(() => { if (viz.dataset.egg == 'shake') viz.dataset.egg = ''; }, 300); }
+    const f = FLOW[at]; if (f.t != 'step' || !STEPS[f.i].ctl) return;
+    say(K, t > .85 ? '금이 가요.\n같은 힘인데 한 점에 몰렸거든요.' : t > .4 ? '닿는 곳이 좁아질수록\n힘이 모여요.' : touched ? '손바닥으로 감싸 쥐면\n힘이 껍데기 전체에 고루 실려요.' : STEPS[f.i].say, true);
+    if (t > .85) { touched = true; main.classList.remove('off'); }
+  }
+  function crack(n) { G('crackA').classList.toggle('on', n >= 1); G('crackB').classList.toggle('on', n >= 2); }
+  function say(who, text, quick) {
+    const s = $('#say'); $('#who').innerHTML = SPARK + '<span></span>'; $('#who span').textContent = who;
+    if (s.textContent == text) return;
+    if (quick) { s.textContent = text; return; }
+    s.classList.add('out'); s.textContent = text; s.offsetWidth; s.classList.remove('out');
+  }
+  function show(on) { for (const g of viz.querySelectorAll('.g')) g.classList.toggle('on', on.includes(g.id)); }
+  function bar() {
+    const f = FLOW[at], seg = document.querySelectorAll('#top .seg i');
+    const p = f.t == 'hook' ? [1, 0, 0] : f.t == 'step' ? [1, (f.i + 1) / STEPS.length, 0] : f.t == 'quiz' ? [1, 1, (f.i + 1) / QUIZ.length] : [1, 1, 1];
+    seg.forEach((e, i) => e.style.width = p[i] * 100 + '%');
+    $('#sec').textContent = f.t == 'hook' ? '질문 · 1/1' : f.t == 'step' ? `설명 · ${f.i + 1}/${STEPS.length}` : f.t == 'quiz' ? `확인 · ${f.i + 1}/${QUIZ.length}` : '다 마침';
+  }
+  function btn(label, off) { main.textContent = label || ''; main.classList.toggle('hide', !label); main.classList.toggle('off', !!off); }
+  function render() {
+    const f = FLOW[at], isQ = f.t == 'hook' || f.t == 'quiz'; bar();
+    $('#panel').classList.toggle('plain', f.t == 'end' || f.t == 'result');
+    $('#quiz').classList.toggle('on', isQ); $('#quiz').classList.remove('res'); $('#sheet').classList.remove('on');
+    $('#ctl').classList.remove('on'); $('#end').classList.remove('on'); $('#talk').style.opacity = f.t == 'result' ? 0 : 1; btn();
+    $('#hint').style.opacity = f.t == 'step' && !STEPS[f.i].ctl ? 1 : 0;
+    if (f.t == 'hook') return ask(HOOK);
+    if (f.t == 'quiz') return ask(QUIZ[f.i]);
+    if (f.t == 'step') {
+      const s = STEPS[f.i]; show(s.on); viz.dataset.egg = s.egg || ''; viz.dataset.arc = s.arc || ''; crack(s.crack || 0);
+      say(s.who, s.say); $('#ctl').classList.toggle('on', !!s.ctl); if (s.ctl) btn('계속', !touched); if (s.run) s.run();
+    }
+    if (f.t == 'end') { show(['gStar']); viz.dataset.egg = ''; viz.dataset.arc = ''; say(C, '별에 불 들어왔다냥!'); btn('계속'); }
+    if (f.t == 'end2') { show(['gHole']); say(C, '이제 길 가다 발밑을 봐라냥.\n맨홀 뚜껑이 죄다 동그랗다냥.'); btn('계속'); }
+    if (f.t == 'result') { show(['gStar']); $('#end').classList.add('on'); btn('완료'); }   // 피그마 L06_2 일반 학습 완료
+  }
+  function go(d) { const n = at + d; if (n < 0) return; if (n >= FLOW.length) { at = 0; score = 0; touched = false; $('#rng').value = 0; return render(); } at = n; render(); }
+
+  // 퀴즈: O/X 는 가운데 질문 + 큰 O X, 초성은 글자 입력, 나머지는 줄 목록(고르면 굵게). 해설이 있으면 결과 시트
+  function ask(q) {
+    const qo = $('#qo'), qc = $('#qc'), ox = q.kind == 'ox', cho = q.kind == 'chosung'; $('#qpic').classList.toggle('on', !!q.pic); $('#qq').textContent = q.q; $('#qq').className = ox || cho ? 'c' : ''; qo.innerHTML = ''; qo.className = ox ? 'ox' : cho ? 'cho' : '';
+    qc.classList.toggle('hide', !(q.kind == 'multi' || cho)); qc.classList.add('off');
+    const result = ok => { qc.classList.add('hide'); if (ok) score++; const sr = $('#sr'); sr.className = ok ? '' : 'ng'; sr.innerHTML = (ok ? STAR('#161616') : '') + (ok ? '정답' : '아쉬워요'); $('#se').textContent = q.e; $('#quiz').classList.add('res'); $('#sheet').classList.add('on'); };
+    if (cho) {
+      const N = q.a[0].length, H = [...q.hint];
+      qo.innerHTML = `<div class="box">${H.map(() => '<span></span>').join('')}<input type="text" maxlength="${N}" autocomplete="off" autocapitalize="off" spellcheck="false"></div>`;
+      const box = qo.firstChild, inp = box.querySelector('input'), sp = [...box.querySelectorAll('span')], val = () => inp.value.trim().replace(/\s+/g, '');
+      const paint = () => { const v = [...inp.value]; sp.forEach((e, i) => { e.textContent = v[i] || H[i]; e.classList.toggle('in', !!v[i]); e.classList.toggle('cur', i == Math.min(v.length ? v.length - 1 : 0, N - 1)); }); qc.classList.toggle('off', val().length < N); };
+      const submit = () => { if (val().length < N || inp.disabled) return; const ok = q.a.includes(val()); inp.disabled = true; box.classList.add(ok ? 'ok' : 'ng'); box.classList.remove('focus'); inp.blur(); result(ok); };
+      inp.onclick = e => e.stopPropagation(); inp.oninput = paint; inp.onfocus = () => box.classList.add('focus'); inp.onblur = () => box.classList.remove('focus');
+      inp.onkeydown = e => { e.stopPropagation(); if (e.key == 'Enter' && !e.isComposing) submit(); };
+      paint();
+      qc.onclick = e => { e.stopPropagation(); submit(); }; setTimeout(() => inp.focus({ preventScroll: true }), 300); return;
+    }
+    const opts = ox ? OX : q.o, right = ox ? [q.a ? 0 : 1] : q.kind == 'multi' ? q.a : [q.a], pick = new Set();
+    const done = () => {
+      const ok = pick.size == right.length && right.every(i => pick.has(i));
+      if (!q.e) { [...qo.children].forEach(b => b.disabled = true); return setTimeout(() => go(1), 650); }   // 후킹: 채점 없이 바로 설명으로
+      [...qo.children].forEach((b, i) => { b.disabled = true; b.classList.remove('sel'); if (right.includes(i)) b.classList.add('ok'); else if (pick.has(i)) b.classList.add(ox ? 'dim' : 'ng'); else if (ox) b.classList.add('dim'); });
+      result(ok);
+    };
+    opts.forEach((o, i) => { const b = document.createElement('button'); b.innerHTML = ox ? o : `<span></span>${CHECK}`; if (!ox) b.firstChild.textContent = o;
+      b.onclick = e => { e.stopPropagation(); if (q.kind == 'multi') { pick.has(i) ? pick.delete(i) : pick.add(i); b.classList.toggle('sel'); qc.classList.toggle('off', !pick.size); } else { pick.add(i); b.classList.add('sel'); done(); } }; qo.append(b); });
+    qc.onclick = e => { e.stopPropagation(); if (pick.size) done(); };
+  }
+  $('#sn').onclick = e => { e.stopPropagation(); go(1); };
+  $('#rng').oninput = e => touch(+e.target.value);
+  $('#ctl').onclick = e => e.stopPropagation();
+  main.onclick = e => { e.stopPropagation(); if (!main.classList.contains('off')) go(1); };
+  $('#back').onclick = e => { e.stopPropagation(); go(-1); };
+  $('#stage').onclick = () => { const f = FLOW[at]; if (f.t == 'step' && !STEPS[f.i].ctl) go(1); };
+  addEventListener('keydown', e => { if (e.target.tagName == 'INPUT') return; if (e.key == 'ArrowRight' || e.key == ' ') $('#stage').onclick(); if (e.key == 'ArrowLeft') go(-1); });
+  const m = location.hash.match(/#(\d+)/); if (m) at = Math.min(+m[1], FLOW.length - 1);
+  function fit() { const k = Math.min(innerWidth / 402, innerHeight / 874); $('#stage').style.transform = `scale(${k}) translate(-50%,-50%)`; }
+  addEventListener('resize', fit); fit(); render();
+})();
+</script>
+</body>
+</html>
